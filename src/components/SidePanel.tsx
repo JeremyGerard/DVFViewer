@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { AddressSuggestion, DvfMutation } from '../types'
 import { typeBienShortLabel } from '../utils/labels'
 import './SidePanel.css'
@@ -53,10 +54,24 @@ export default function SidePanel({
   onHover,
   onClose,
 }: Props) {
+  const [expanded, setExpanded] = useState(false)
   return (
-    <aside className={`sidepanel ${open ? 'is-open' : ''}`}>
+    <aside
+      className={`sidepanel ${open ? 'is-open' : ''} ${
+        expanded ? 'is-expanded' : ''
+      }`}
+    >
+      <button
+        type="button"
+        className="sidepanel-grabber"
+        onClick={() => setExpanded((v) => !v)}
+        aria-label={expanded ? 'Réduire le panneau' : 'Agrandir le panneau'}
+      >
+        <span className="sidepanel-grabber-bar" />
+      </button>
+
       <header className="sidepanel-header">
-        <div>
+        <div className="sidepanel-header-text">
           <div className="sidepanel-eyebrow">Données DVF</div>
           <h2 className="sidepanel-title">
             {address ? address.label : 'Aucune adresse sélectionnée'}

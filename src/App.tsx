@@ -66,9 +66,14 @@ export default function App() {
         <button
           className="reopen-btn"
           onClick={() => setPanelOpen(true)}
-          aria-label="Rouvrir le panneau"
+          aria-label="Rouvrir le panneau des transactions"
         >
-          ›
+          <span className="reopen-btn-arrow">›</span>
+          <span className="reopen-btn-label">
+            {mutations.length > 0
+              ? `${mutations.length} transaction${mutations.length > 1 ? 's' : ''}`
+              : 'Voir les résultats'}
+          </span>
         </button>
       )}
     </div>
