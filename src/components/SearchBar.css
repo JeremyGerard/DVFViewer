@@ -1,0 +1,82 @@
+.searchbar {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 32px));
+  z-index: 1000;
+  font-size: 15px;
+}
+
+.searchbar-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  padding: 0 14px;
+}
+
+.searchbar-icon {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.searchbar-input-wrap input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 12px;
+  font-size: 15px;
+  background: transparent;
+  color: #1f2937;
+}
+
+.searchbar-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 4px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.searchbar-suggestions {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.searchbar-suggestions li {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+
+.searchbar-suggestions li.is-highlighted,
+.searchbar-suggestions li:hover {
+  background: #f3f4f6;
+  border-left-color: #2563eb;
+}
+
+.suggestion-main {
+  font-weight: 500;
+  color: #111827;
+}
+
+.suggestion-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}

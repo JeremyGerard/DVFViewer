@@ -1,0 +1,32 @@
+.app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.map-wrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.reopen-btn {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 56px;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  background: #ffffff;
+  color: #2563eb;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.15);
+  z-index: 800;
+}
+
+.reopen-btn:hover {
+  background: #f3f4f6;
+}

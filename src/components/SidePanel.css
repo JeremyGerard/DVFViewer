@@ -1,0 +1,169 @@
+.sidepanel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 90vw;
+  background: #ffffff;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidepanel.is-open {
+  transform: translateX(0);
+}
+
+.sidepanel-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sidepanel-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #2563eb;
+}
+
+.sidepanel-title {
+  margin: 4px 0 0;
+  font-size: 17px;
+  line-height: 1.3;
+  color: #111827;
+}
+
+.sidepanel-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.sidepanel-close {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: #6b7280;
+  padding: 0 4px;
+}
+
+.sidepanel-close:hover {
+  color: #111827;
+}
+
+.sidepanel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 24px;
+}
+
+.sidepanel-status {
+  padding: 24px 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.sidepanel-error {
+  color: #b91c1c;
+}
+
+.sidepanel-summary {
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 12px;
+}
+
+.mutation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mutation-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #fff;
+}
+
+.mutation-card:hover,
+.mutation-card.is-highlighted {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.mutation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.badge-maison { background: #d1fae5; color: #065f46; }
+.badge-appartement { background: #dbeafe; color: #1e40af; }
+.badge-terrain { background: #fef3c7; color: #92400e; }
+.badge-local { background: #ffedd5; color: #9a3412; }
+
+.mutation-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mutation-address {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.muted { color: #6b7280; }
+
+.mutation-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.price-main {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.price-m2 {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mutation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: #4b5563;
+}
