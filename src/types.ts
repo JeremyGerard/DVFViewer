@@ -7,6 +7,8 @@ export interface AddressSuggestion {
   city?: string
   street?: string
   housenumber?: string
+  /** Optional GPS accuracy in meters (when source is geolocation) */
+  accuracy?: number
 }
 
 export type LatLng = [number, number]
@@ -29,4 +31,15 @@ export interface DvfMutation {
   nbMaisons: number
   geometry: Polygon
   centroid: LatLng
+}
+
+export interface ParcelGroup {
+  parcelId: string
+  geometry: Polygon
+  centroid: LatLng
+  /** Distance in meters from origin point */
+  distance: number
+  /** Display index, 1-based, assigned after sorting by distance */
+  index: number
+  mutations: DvfMutation[]
 }

@@ -1,7 +1,15 @@
 import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Polygon, Popup, useMap } from 'react-leaflet'
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Polygon,
+  Popup,
+  Circle,
+  useMap,
+} from 'react-leaflet'
 import L from 'leaflet'
-import type { AddressSuggestion, DvfMutation } from '../types'
+import type { AddressSuggestion, DvfMutation, ParcelGroup } from '../types'
 import { typeBienShortLabel } from '../utils/labels'
 
 // Fix default marker icons (Leaflet default assets don't load via bundlers)
@@ -22,9 +30,9 @@ L.Marker.prototype.options.icon = DefaultIcon
 
 interface Props {
   selected: AddressSuggestion | null
-  mutations: DvfMutation[]
-  highlightedId: string | null
-  onMutationClick: (id: string) => void
+  groups: ParcelGroup[]
+  highlightedParcelId: string | null
+  onParcelClick: (id: string) => void
 }
 
 function FlyTo({ target }: { target: AddressSuggestion | null }) {
@@ -55,11 +63,29 @@ const fmtEur = (v: number | null) =>
         maximumFractionDigits: 0,
       }).format(v)
 
+const fmtDate = (s?: string) => {
+  if (!s) return ''
+  const d = new Date(s)
+  if (isNaN(d.getTime())) return s
+  return d.toLocaleDateString('fr-FR')
+}
+
+function numberIcon(index: number, color: string, hi: boolean): L.DivIcon {
+  return L.divIcon({
+    html: `<div class="parcel-label${hi ? ' is-hi' : ''}" style="background:${
+      hi ? '#dc2626' : color
+    }">${index}</div>`,
+    className: 'parcel-label-wrapper',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  })
+}
+
 export default function MapView({
   selected,
-  mutations,
-  highlightedId,
-  onMutationClick,
+  groups,
+  highlightedParcelId,
+  onParcelClick,
 }: Props) {
   return (
     <MapContainer
@@ -74,42 +100,80 @@ export default function MapView({
       />
 
       {selected && (
-        <Marker position={[selected.lat, selected.lon]}>
-          <Popup>{selected.label}</Popup>
-        </Marker>
+        <>
+          <Marker position={[selected.lat, selected.lon]}>
+            <Popup>{selected.label}</Popup>
+          </Marker>
+          {selected.accuracy != null && selected.accuracy > 0 && (
+            <Circle
+              center={[selected.lat, selected.lon]}
+              radius={selected.accuracy}
+              pathOptions={{
+                color: '#2563eb',
+                weight: 1,
+                fillColor: '#2563eb',
+                fillOpacity: 0.12,
+              }}
+            />
+          )}
+        </>
       )}
 
-      {mutations.map((m) => {
-        if (!m.geometry.length) return null
-        const isHi = highlightedId === m.id
-        const color = colorFor(m)
+      {groups.map((g) => {
+        if (!g.geometry.length) return null
+        const isHi = highlightedParcelId === g.parcelId
+        const ref = g.mutations[0]
+        const color = colorFor(ref)
         return (
           <Polygon
-            key={m.id}
-            positions={m.geometry}
+            key={g.parcelId}
+            positions={g.geometry}
             pathOptions={{
               color: isHi ? '#dc2626' : color,
               weight: isHi ? 3 : 1.5,
               fillColor: color,
               fillOpacity: isHi ? 0.55 : 0.25,
             }}
-            eventHandlers={{ click: () => onMutationClick(m.id) }}
+            eventHandlers={{ click: () => onParcelClick(g.parcelId) }}
           >
             <Popup>
-              <div style={{ fontSize: 12, minWidth: 180 }}>
-                <strong>{typeBienShortLabel(m)}</strong>
-                <br />
-                <em>{m.date}</em> · {m.nature}
-                <br />
-                <strong>{fmtEur(m.valeur)}</strong>
-                {m.surfaceBati ? <> · {m.surfaceBati} m²</> : null}
-                <br />
-                <span style={{ color: '#6b7280' }}>
-                  Parcelle {m.parcelles[0] ?? '—'}
-                </span>
+              <div className="parcel-popup">
+                <div className="parcel-popup-head">
+                  <span className="parcel-popup-num" style={{ background: color }}>
+                    {g.index}
+                  </span>
+                  <strong>Parcelle {g.parcelId}</strong>
+                </div>
+                <ul className="parcel-popup-list">
+                  {g.mutations.map((m) => (
+                    <li key={m.id}>
+                      <span className="ppl-date">{fmtDate(m.date)}</span>
+                      <strong className="ppl-price">{fmtEur(m.valeur)}</strong>
+                      <span className="ppl-meta">
+                        {typeBienShortLabel(m)}
+                        {m.surfaceBati ? ` · ${m.surfaceBati} m²` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </Popup>
           </Polygon>
+        )
+      })}
+
+      {groups.map((g) => {
+        if (!g.centroid) return null
+        const isHi = highlightedParcelId === g.parcelId
+        const color = colorFor(g.mutations[0])
+        return (
+          <Marker
+            key={`label-${g.parcelId}`}
+            position={g.centroid}
+            icon={numberIcon(g.index, color, isHi)}
+            eventHandlers={{ click: () => onParcelClick(g.parcelId) }}
+            keyboard={false}
+          />
         )
       })}
 

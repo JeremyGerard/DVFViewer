@@ -69,3 +69,69 @@
     background: #1d4ed8;
   }
 }
+
+
+/* ===== Géolocalisation FAB ===== */
+.geo-fab {
+  position: absolute;
+  right: calc(16px + var(--safe-right));
+  bottom: calc(20px + var(--safe-bottom));
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2563eb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  z-index: 850;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.geo-fab:hover {
+  background: #f3f4f6;
+}
+
+.geo-fab:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.geo-fab-icon {
+  display: block;
+}
+
+.geo-fab.is-loading .geo-fab-icon {
+  animation: geo-spin 1s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes geo-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Push the FAB above the bottom-sheet on mobile when panel is open */
+@media (max-width: 640px) {
+  .sidepanel.is-open ~ .geo-fab {
+    bottom: calc(60vh + 16px);
+  }
+}
+
+.geo-toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(90px + var(--safe-bottom));
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  z-index: 950;
+  max-width: 90vw;
+  cursor: pointer;
+}

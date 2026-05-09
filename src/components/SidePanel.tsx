@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import type { AddressSuggestion, DvfMutation } from '../types'
+import type { AddressSuggestion, DvfMutation, ParcelGroup } from '../types'
 import { typeBienShortLabel } from '../utils/labels'
+import { fmtDistance } from '../utils/grouping'
 import './SidePanel.css'
 
 interface Props {
@@ -8,8 +9,8 @@ interface Props {
   loading: boolean
   error: string | null
   address: AddressSuggestion | null
-  mutations: DvfMutation[]
-  highlightedId: string | null
+  groups: ParcelGroup[]
+  highlightedParcelId: string | null
   onHover: (id: string | null) => void
   onClose: () => void
 }
@@ -44,17 +45,28 @@ const badgeKey = (m: DvfMutation) => {
   return 'autre'
 }
 
+function groupColor(g: ParcelGroup): string {
+  const m = g.mutations[0]
+  if (m.nbMaisons > 0) return '#10b981'
+  if (m.nbAppartements > 0) return '#2563eb'
+  if (m.typeBien.includes('terrain')) return '#a16207'
+  if (m.typeBien.includes('local') || m.typeBien.includes('commercial'))
+    return '#f59e0b'
+  return '#9333ea'
+}
+
 export default function SidePanel({
   open,
   loading,
   error,
   address,
-  mutations,
-  highlightedId,
+  groups,
+  highlightedParcelId,
   onHover,
   onClose,
 }: Props) {
   const [expanded, setExpanded] = useState(false)
+  const totalMutations = groups.reduce((acc, g) => acc + g.mutations.length, 0)
   return (
     <aside
       className={`sidepanel ${open ? 'is-open' : ''} ${
@@ -90,60 +102,86 @@ export default function SidePanel({
       <div className="sidepanel-body">
         {loading && <div className="sidepanel-status">Chargement des transactions…</div>}
         {error && <div className="sidepanel-status sidepanel-error">{error}</div>}
-        {!loading && !error && mutations.length === 0 && address && (
+        {!loading && !error && groups.length === 0 && address && (
           <div className="sidepanel-status">
             Aucune transaction trouvée à proximité de cette adresse.
           </div>
         )}
 
-        {!loading && mutations.length > 0 && (
+        {!loading && groups.length > 0 && (
           <>
             <div className="sidepanel-summary">
-              <strong>{mutations.length}</strong> transaction
-              {mutations.length > 1 ? 's' : ''} aux alentours
+              <strong>{groups.length}</strong> parcelle
+              {groups.length > 1 ? 's' : ''} ·{' '}
+              <strong>{totalMutations}</strong> transaction
+              {totalMutations > 1 ? 's' : ''}
             </div>
             <ul className="mutation-list">
-              {mutations.map((m) => {
-                const ppm2 = pricePerM2(m)
+              {groups.map((g) => {
+                const color = groupColor(g)
+                const isHi = highlightedParcelId === g.parcelId
                 return (
                   <li
-                    key={m.id}
-                    className={`mutation-card ${
-                      highlightedId === m.id ? 'is-highlighted' : ''
-                    }`}
-                    onMouseEnter={() => onHover(m.id)}
+                    key={g.parcelId}
+                    className={`mutation-card ${isHi ? 'is-highlighted' : ''}`}
+                    onMouseEnter={() => onHover(g.parcelId)}
                     onMouseLeave={() => onHover(null)}
+                    onClick={() => onHover(g.parcelId)}
                   >
                     <div className="mutation-row">
-                      <span className={`badge badge-${badgeKey(m)}`}>
-                        {typeBienShortLabel(m)}
+                      <span className="parcel-num" style={{ background: color }}>
+                        {g.index}
                       </span>
-                      <span className="mutation-date">{fmtDate(m.date)}</span>
+                      <div className="mutation-row-text">
+                        <div className="mutation-address">
+                          Parcelle {g.parcelId}
+                        </div>
+                        <div className="muted parcel-distance">
+                          à {fmtDistance(g.distance)} ·{' '}
+                          {g.mutations.length} transaction
+                          {g.mutations.length > 1 ? 's' : ''}
+                        </div>
+                      </div>
                     </div>
-                    <div className="mutation-address">
-                      <span className="muted">
-                        Parcelle {m.parcelles[0] ?? '—'}
-                        {m.parcelles.length > 1
-                          ? ` (+${m.parcelles.length - 1})`
-                          : ''}
-                      </span>
-                    </div>
-                    <div className="mutation-price">
-                      <span className="price-main">{fmtEur(m.valeur)}</span>
-                      {ppm2 != null && (
-                        <span className="price-m2">{fmtEur(ppm2)} / m²</span>
-                      )}
-                    </div>
-                    <div className="mutation-meta">
-                      {m.surfaceBati != null && m.surfaceBati > 0 && (
-                        <span>{m.surfaceBati} m² bâti</span>
-                      )}
-                      {m.surfaceTerrain != null && m.surfaceTerrain > 0 && (
-                        <span>terrain {m.surfaceTerrain} m²</span>
-                      )}
-                      {m.vefa && <span>VEFA</span>}
-                      <span className="muted">{m.nature}</span>
-                    </div>
+
+                    <ul className="parcel-timeline">
+                      {g.mutations.map((m) => {
+                        const ppm2 = pricePerM2(m)
+                        return (
+                          <li key={m.id} className="parcel-timeline-item">
+                            <div className="ptl-row">
+                              <span className={`badge badge-${badgeKey(m)}`}>
+                                {typeBienShortLabel(m)}
+                              </span>
+                              <span className="mutation-date">
+                                {fmtDate(m.date)}
+                              </span>
+                            </div>
+                            <div className="mutation-price">
+                              <span className="price-main">
+                                {fmtEur(m.valeur)}
+                              </span>
+                              {ppm2 != null && (
+                                <span className="price-m2">
+                                  {fmtEur(ppm2)} / m²
+                                </span>
+                              )}
+                            </div>
+                            <div className="mutation-meta">
+                              {m.surfaceBati != null && m.surfaceBati > 0 && (
+                                <span>{m.surfaceBati} m² bâti</span>
+                              )}
+                              {m.surfaceTerrain != null &&
+                                m.surfaceTerrain > 0 && (
+                                  <span>terrain {m.surfaceTerrain} m²</span>
+                                )}
+                              {m.vefa && <span>VEFA</span>}
+                              <span className="muted">{m.nature}</span>
+                            </div>
+                          </li>
+                        )
+                      })}
+                    </ul>
                   </li>
                 )
               })}

@@ -2,6 +2,7 @@ import type { AddressSuggestion } from '../types'
 
 const COMPLETION_URL = 'https://data.geopf.fr/geocodage/completion'
 const SEARCH_URL = 'https://data.geopf.fr/geocodage/search'
+const REVERSE_URL = 'https://data.geopf.fr/geocodage/reverse'
 
 interface GeoplateformeCompletionResponse {
   status: string
@@ -97,4 +98,37 @@ export async function searchAddress(
       housenumber: p.housenumber,
     }
   })
+}
+
+
+export async function reverseGeocode(
+  lat: number,
+  lon: number,
+  signal?: AbortSignal,
+): Promise<AddressSuggestion | null> {
+  const params = new URLSearchParams({
+    lon: String(lon),
+    lat: String(lat),
+    index: 'address',
+    limit: '1',
+  })
+
+  const res = await fetch(`${REVERSE_URL}?${params.toString()}`, { signal })
+  if (!res.ok) throw new Error(`Reverse failed: ${res.status}`)
+  const data = (await res.json()) as GeoplateformeSearchResponse
+  const f = data.features?.[0]
+  if (!f) return null
+
+  const [flon, flat] = f.geometry.coordinates
+  const p = f.properties
+  return {
+    label: p.label || p.name || '',
+    fullText: p.label || p.name || '',
+    lat: flat,
+    lon: flon,
+    postcode: p.postcode,
+    city: p.city,
+    street: p.street,
+    housenumber: p.housenumber,
+  }
 }

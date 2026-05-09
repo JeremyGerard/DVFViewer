@@ -147,6 +147,54 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
+  gap: 10px;
+}
+
+.parcel-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.mutation-row-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.parcel-distance {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.parcel-timeline {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px dashed #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.parcel-timeline-item + .parcel-timeline-item {
+  border-top: 1px dashed #f3f4f6;
+  padding-top: 10px;
+}
+
+.ptl-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .badge {
