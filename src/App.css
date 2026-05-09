@@ -113,10 +113,15 @@
   to { transform: rotate(360deg); }
 }
 
-/* Push the FAB above the bottom-sheet on mobile when panel is open */
+/* On mobile, the bottom-sheet and reopen pill own the bottom area:
+   move the FAB to the top-right, just under the search bar. */
 @media (max-width: 640px) {
-  .sidepanel.is-open ~ .geo-fab {
-    bottom: calc(60vh + 16px);
+  .geo-fab {
+    top: calc(8px + var(--safe-top) + 56px);
+    right: calc(12px + var(--safe-right));
+    bottom: auto;
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -134,4 +139,11 @@
   z-index: 950;
   max-width: 90vw;
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .geo-toast {
+    bottom: auto;
+    top: calc(8px + var(--safe-top) + 64px);
+  }
 }
